@@ -1,8 +1,8 @@
-// src/App.js — БОКОВОЕ МЕНЮ ВСЕГДА ВИДИМО НА ДЕСКТОПЕ
 
 import React, { useState, useEffect } from 'react';
 import './App.css';
 
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 const App = () => {
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
@@ -30,9 +30,6 @@ const App = () => {
       setNotifications(prev => prev.filter(n => n.id !== id));
     }, 3000);
   };
-
-  // === ФУНКЦИИ РАБОТЫ С ИГРАМИ ===
-
   const addGameToProfile = async (game, status) => {
     if (!user) {
       addNotification('Сначала войдите в систему', 'error');
@@ -40,7 +37,7 @@ const App = () => {
     }
 
     try {
-      const res = await fetch(`http://localhost:5000/api/user/${user.email}/game`, {
+      const res = await fetch(`${API_BASE_URL}/api/user/${user.email}/game`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -72,7 +69,7 @@ const App = () => {
     if (!gameToUpdate) return;
 
     try {
-      const res = await fetch(`http://localhost:5000/api/user/${user.email}/game`, {
+      const res = await fetch(`${API_BASE_URL}/api/user/${user.email}/game`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -104,7 +101,7 @@ const App = () => {
     }
 
     try {
-      const res = await fetch(`http://localhost:5000/api/user/${user.email}/game/${gameId}`, {
+      const res = await fetch(`${API_BASE_URL}/api/user/${user.email}/game/${gameId}`, {
         method: 'DELETE'
       });
 
@@ -126,7 +123,7 @@ const App = () => {
   useEffect(() => {
     const fetchGames = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/games/search?q=${searchQuery}`);
+        const res = await fetch(`${API_BASE_URL}/api/games/search?q=${searchQuery}`);
         const data = await res.json();
         setGames(data.results || []);
       } catch (err) {
@@ -181,7 +178,7 @@ const App = () => {
     if (hasError) return;
 
     try {
-      const res = await fetch('http://localhost:5000/api/user', {
+      const res = await fetch(`${API_BASE_URL}/api/user`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, email })
@@ -192,7 +189,7 @@ const App = () => {
         setUser(data);
         addNotification('Добро пожаловать!', 'success');
       } else if (data.error === 'Пользователь уже существует') {
-        const userRes = await fetch(`http://localhost:5000/api/user/${email}`);
+        const userRes = await fetch(`${API_BASE_URL}/api/user/${email}`);
         const userData = await userRes.json();
         if (userRes.ok) {
           setUser(userData);
@@ -208,22 +205,16 @@ const App = () => {
       addNotification('Не удалось подключиться к серверу', 'error');
     }
   };
-
   const logout = () => {
     setUser(null);
     setActiveTab('all');
   };
-
-  // Обработчик клика по фону — закрытие мобильного меню
   const handleOverlayClick = (e) => {
     if (e.target === e.currentTarget) {
       setIsMobileMenuOpen(false);
     }
   };
-
-  // Определяем, мобильное ли устройство
   const isMobile = window.innerWidth < 1024;
-
   return (
     <div className="app">
       {/* Уведомления */}
@@ -240,7 +231,6 @@ const App = () => {
         <div className="logo-container">
           <img src="/logo2.png" alt="Eternal Fang" className="logo" />
         </div>
-        {/* Поиск всегда виден */}
         <div className="search-box">
           <input
             type="text"
