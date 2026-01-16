@@ -1,0 +1,593 @@
+/* src/App.css — добавлен оверлей для мобильных */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family:system-ui Helvetica;
+  background-color: #0d0d0d;
+  color: #fff;
+  min-height: 100vh;
+}
+
+/* === Уведомления === */
+.notification-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.notification {
+  padding: 12px 20px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.notification.success {
+  background-color: #4caf50;
+  color: white;
+}
+
+.notification.error {
+  background-color: #f44336;
+  color: white;
+}
+
+/* === Шапка === */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  height: 60px;
+  background-color: #1a1a1a;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 1px solid #333;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  margin-right: 8px;
+}
+
+.search-box {
+  flex: 1;
+  max-width: 600px;
+  margin: 0 24px;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 10px 16px;
+  border: 1px solid #333;
+  border-radius: 24px;
+  background-color: #222;
+  color: #fff;
+  font-size: 14px;
+  outline: none;
+}
+
+.search-box input:focus {
+  border-color: #ff4655;
+  box-shadow: 0 0 0 2px rgba(255, 70, 85, 0.2);
+}
+
+.menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* === Контейнер === */
+.app-container {
+  display: flex;
+  min-height: calc(100vh - 60px);
+}
+
+/* === Боковое меню === */
+.sidebar {
+  width: 250px;
+  background-color: #0d0d0d;
+  height: 100%;
+  position: fixed;
+  top: 60px;
+  left: 0;
+  padding: 24px;
+  z-index: 99;
+  border-right: 1px solid #333;
+  transition: transform 0.3s ease;
+  transform: translateX(-100%);
+  overflow-y: auto;
+}
+
+.sidebar.desktop {
+  transform: translateX(0);
+  z-index: 99;
+}
+
+.sidebar.open {
+  transform: translateX(0);
+}
+
+.sidebar-content {
+  padding: 15px;
+  background-color: #1a1a1a;
+  border-radius: 8px;
+  border: 1px solid #333;
+}
+
+.auth-section h3 {
+  margin-bottom: 16px;
+  color: #ff4655;
+  font-size: 18px;
+}
+
+.auth-section input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 12px;
+  border: 1px solid #333;
+  border-radius: 50px;
+  background-color: #222;
+  color: #fff;
+  font-size: 14px;
+}
+
+.login-btn {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(to right, #ff4655, #ff6b6b);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.login-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 70, 85, 0.4);
+}
+
+.login-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* === Профиль в боковом меню === */
+.profile-preview {
+  padding: 15px;
+  padding: 5px;
+  background-color: #1a1a1a;
+  border-radius: 8px;
+  margin-top: 20px;
+  border: 1px solid #333;
+}
+
+.profile-preview h4,
+.profile-preview p {
+  margin: 8px 0;
+  padding: 5px;
+  font-size: 13px;
+  color: #ddd;
+}
+
+.logout-btn {
+  width: 100%;
+  padding: 10px;
+  background: linear-gradient(to right, #f44336, #ff6b6b);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 15px;
+}
+
+.logout-btn:hover {
+  transform: translateY(-2px);
+}
+
+/* === Оверлей для мобильных === */
+.mobile-overlay {
+  position: fixed;
+  top: 60px;
+  left: 0;
+  width: 100%;
+  height: calc(100vh - 60px);
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 98;
+}
+
+/* === Основной контент === */
+.main-content {
+  flex: 1;
+  padding: 24px;
+  margin-left: 250px;
+  box-sizing: border-box;
+}
+
+/* === Табы === */
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.tab-button {
+  padding: 10px 16px;
+  background-color: #222;
+  border: 1px solid #333;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+  color: #ddd;
+}
+
+.tab-button:hover {
+  background-color: #333;
+}
+
+.tab-button.active {
+  background: linear-gradient(to right, #ff4655, #ff6b6b);
+  color: white;
+  border-color: #ff4655;
+}
+
+/* === Сетка игр === */
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 24px;
+}
+
+/* === Карточка игры === */
+.game-card {
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: default;
+  transition: transform 0.2s;
+}
+
+.game-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+}
+
+.game-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.game-info {
+  padding: 16px;
+}
+
+.game-info h3 {
+  font-size: 16px;
+  margin-bottom: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #fff;
+}
+
+.release-date {
+  font-size: 12px;
+  color: #aaa;
+  margin-bottom: 12px;
+}
+
+/* === Кнопки действий === */
+.add-btn,
+.remove-btn,
+.edit-btn {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.2s;
+  margin-top: 8px;
+  display: inline-block;
+  min-width: 90px;
+  text-align: center;
+}
+
+.add-btn {
+  background: linear-gradient(to right, #4CAF50, #66BB6A);
+  color: white;
+}
+
+.add-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+}
+
+.add-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.remove-btn {
+  background: linear-gradient(to right, #f44336, #ff6b6b);
+  color: white;
+}
+
+.edit-btn {
+  background: linear-gradient(to right, #2196f3, #4fc3f7);
+  color: white;
+  margin-left: 8px;
+}
+
+.remove-btn:hover,
+.edit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.game-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+/* === Модальное окно === */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #1a1a1a;
+  padding: 24px;
+  border-radius: 12px;
+  text-align: center;
+  max-width: 420px;
+  width: 90%;
+  border: 1px solid #333;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.modal-content h3 {
+  margin-bottom: 20px;
+  font-size: 18px;
+  color: #ff4655;
+}
+
+.modal-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.modal-btn {
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.modal-btn.planning {
+  background: linear-gradient(to right, #ff9e00, #ffb74d);
+}
+.modal-btn.playing {
+  background: linear-gradient(to right, #2196f3, #4fc3f7);
+}
+.modal-btn.completed {
+  background: linear-gradient(to right, #4caf50, #81c784);
+}
+
+.modal-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+}
+
+.modal-close {
+  padding: 10px;
+  background-color: #555;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.modal-close:hover {
+  background-color: #666;
+}
+
+/* === Ошибки === */
+.error-text {
+  color: #ff6b6b;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* === Адаптивность === */
+
+@media (max-width: 1024px) {
+  .app-container {
+    min-height: calc(100vh - 60px);
+  }
+
+  .main-content {
+    margin-left: 0;
+    padding: 24px;
+  }
+
+  .sidebar {
+    width: 250px;
+    transform: translateX(-100%);
+    z-index: 100;
+    position: fixed;
+    top: 60px;
+    left: 0;
+    height: 100%;
+    padding: 24px;
+    background-color: #0d0d0d;
+    border-right: 1px solid #333;
+    transition: transform 0.3s ease;
+  }
+
+  .sidebar.desktop {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .menu-btn {
+    display: block;
+  }
+
+  .games-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  }
+
+  .logo {
+    width: 28px;
+    height: 28px;
+  }
+
+  .tabs {
+    gap: 6px;
+  }
+
+  .tab-button {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    max-width: 300px;
+    transform: translateX(-100%);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .main-content {
+    margin-left: 0;
+    padding: 24px;
+  }
+
+  .games-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  }
+
+  .search-box {
+    margin: 0 12px;
+  }
+
+  .tab-button {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .game-card img {
+    height: 150px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar {
+    width: 100%;
+    max-width: 300px;
+    transform: translateX(-100%);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .main-content {
+    margin-left: 0;
+    padding: 16px;
+  }
+
+  .games-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .game-card img {
+    height: 120px;
+  }
+
+  .game-info h3 {
+    font-size: 14px;
+  }
+
+  .release-date {
+    font-size: 10px;
+  }
+
+  .add-btn,
+  .remove-btn,
+  .edit-btn {
+    padding: 6px 10px;
+    font-size: 10px;
+    min-width: 70px;
+  }
+
+  .search-box input {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .logo {
+    width: 24px;
+    height: 24px;
+  }
+
+  .menu-btn {
+    font-size: 20px;
+  }
+}
