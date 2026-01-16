@@ -163,6 +163,13 @@ process.on('SIGINT', async () => {
   await prisma.$disconnect();
   process.exit(0);
 });
+// Применить миграции при старте
+prisma.$connect().then(() => {
+  console.log('✅ Подключение к БД успешно');
+}).catch(err => {
+  console.error('❌ Ошибка подключения к БД:', err);
+  process.exit(1);
+});
 
 app.listen(PORT, () => {
   console.log(`✅ Eternal Fang backend запущен на http://localhost:${PORT}`);
