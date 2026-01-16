@@ -163,14 +163,27 @@ process.on('SIGINT', async () => {
   await prisma.$disconnect();
   process.exit(0);
 });
-// Применить миграции при старте
-prisma.$connect().then(() => {
-  console.log('✅ Подключение к БД успешно');
-}).catch(err => {
-  console.error('❌ Ошибка подключения к БД:', err);
+
+// Обработчики ошибок
+process.on('unhandledRejection', (err) => {
+  console.error('Unhandled Rejection:', err);
   process.exit(1);
 });
 
-app.listen(PORT, () => {
-  console.log(`✅ Eternal Fang backend запущен на http://localhost:${PORT}`);
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err);
+  process.exit(1);
 });
+
+// Подключение к БД и запуск сервера
+prisma.$connect()
+  .then(() => {
+    console.log('✅ Подключение к БД успешно');
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`✅ Eternal Fang backend запущен на порту ${PORT}`);
+    });
+  })
+  .catch(err => {
+    console.error('❌ Ошибка подключения к БД:', err);
+    process.exit(1);
+  });
