@@ -63,7 +63,7 @@ app.get('/api/games/search', (req, res) => {
   res.json({ results });
 });
 
-
+// Создать пользователя
 app.post('/api/user', async (req, res) => {
   try {
     const { username, email } = req.body;
@@ -84,6 +84,7 @@ app.post('/api/user', async (req, res) => {
   }
 });
 
+// Получить пользователя
 app.get('/api/user/:email', async (req, res) => {
   try {
     const user = await prisma.user.findUnique({
@@ -97,6 +98,7 @@ app.get('/api/user/:email', async (req, res) => {
   }
 });
 
+// Добавить/обновить игру
 app.post('/api/user/:email/game', async (req, res) => {
   try {
     const { email } = req.params;
@@ -128,6 +130,7 @@ app.post('/api/user/:email/game', async (req, res) => {
   }
 });
 
+// Удалить игру
 app.delete('/api/user/:email/game/:gameId', async (req, res) => {
   try {
     const { email, gameId } = req.params;
@@ -149,11 +152,12 @@ app.delete('/api/user/:email/game/:gameId', async (req, res) => {
   }
 });
 
-
+// Обработчик 404
 app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
+// Завершение работы
 const shutdown = async () => {
   try {
     await prisma.$disconnect();
@@ -168,18 +172,18 @@ const shutdown = async () => {
 process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
 
-
+// Обработчики ошибок
 process.on('unhandledRejection', (err) => {
   console.error('Unhandled Rejection:', err);
-  setTimeout(() => process.exit(1), 5000); 
+  setTimeout(() => process.exit(1), 5000);
 });
 
 process.on('uncaughtException', (err) => {
   console.error('Uncaught Exception:', err);
-  setTimeout(() => process.exit(1), 5000); 
+  setTimeout(() => process.exit(1), 5000);
 });
 
-
+// Подключение к БД и запуск сервера
 prisma.$connect()
   .then(() => {
     console.log('✅ Подключение к БД успешно');
@@ -189,3 +193,4 @@ prisma.$connect()
   })
   .catch(err => {
     console.error('❌ Ошибка подключения к БД:', err);
+  });
