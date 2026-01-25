@@ -305,9 +305,9 @@ const App = () => {
 
             {/* Соцсети — красивые кнопки */}
             <div className="social-icons">
-              <a href="https://t.me/your_channel" target="_blank" rel="noopener noreferrer" className="social-icon-btn" aria-label="Telegram">T</a>
-              <a href="https://youtube.com/@your_channel" target="_blank" rel="noopener noreferrer" className="social-icon-btn" aria-label="YouTube">Y</a>
-              <a href="https://discord.gg/your_invite" target="_blank" rel="noopener noreferrer" className="social-icon-btn" aria-label="Discord">D</a>
+              <a href="https://t.me/your_channel" target="_blank" rel="noopener noreferrer" className="social-icon-btn" aria-label="Telegram">TG</a>
+              <a href="https://youtube.com/@your_channel" target="_blank" rel="noopener noreferrer" className="social-icon-btn" aria-label="YouTube">YT</a>
+              <a href="https://discord.gg/your_invite" target="_blank" rel="noopener noreferrer" className="social-icon-btn" aria-label="Discord">DS</a>
             </div>
           </div>
         </aside>
