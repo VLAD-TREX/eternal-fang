@@ -1,8 +1,9 @@
-
+// src/App.js
 import React, { useState, useEffect } from 'react';
 import './App.css';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
 const App = () => {
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
@@ -12,16 +13,19 @@ const App = () => {
   const [activeTab, setActiveTab] = useState('all');
   const [usernameError, setUsernameError] = useState('');
   const [emailError, setEmailError] = useState('');
-
-  // Для мобильного меню
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  // Для модального окна
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [selectedGame, setSelectedGame] = useState(null);
-
-  // Уведомления
   const [notifications, setNotifications] = useState([]);
+  const [hoveredGameId, setHoveredGameId] = useState(null);
+
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 1024);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const addNotification = (message, type = 'success') => {
     const id = Date.now();
@@ -30,26 +34,19 @@ const App = () => {
       setNotifications(prev => prev.filter(n => n.id !== id));
     }, 3000);
   };
+
   const addGameToProfile = async (game, status) => {
     if (!user) {
       addNotification('Сначала войдите в систему', 'error');
       return;
     }
-
     try {
       const res = await fetch(`${API_BASE_URL}/api/user/${user.email}/game`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          gameId: game.id,
-          title: game.name,
-          status,
-          progress: 0
-        })
+        body: JSON.stringify({ gameId: game.id, title: game.name, status, progress: 0 })
       });
-
       const data = await res.json();
-
       if (res.ok) {
         setUser(data);
         setShowStatusModal(false);
@@ -67,7 +64,6 @@ const App = () => {
     if (!user) return;
     const gameToUpdate = user.games.find(g => g.gameId === gameId);
     if (!gameToUpdate) return;
-
     try {
       const res = await fetch(`${API_BASE_URL}/api/user/${user.email}/game`, {
         method: 'POST',
@@ -79,9 +75,7 @@ const App = () => {
           progress: gameToUpdate.progress || 0
         })
       });
-
       const data = await res.json();
-
       if (res.ok) {
         setUser(data);
         addNotification('Статус обновлён!', 'success');
@@ -99,14 +93,9 @@ const App = () => {
       addNotification('Сначала войдите в систему', 'error');
       return;
     }
-
     try {
-      const res = await fetch(`${API_BASE_URL}/api/user/${user.email}/game/${gameId}`, {
-        method: 'DELETE'
-      });
-
+      const res = await fetch(`${API_BASE_URL}/api/user/${user.email}/game/${gameId}`, { method: 'DELETE' });
       const data = await res.json();
-
       if (res.ok) {
         setUser(data);
         addNotification('Игра удалена', 'success');
@@ -119,7 +108,6 @@ const App = () => {
     }
   };
 
-  // Загрузка игр
   useEffect(() => {
     const fetchGames = async () => {
       try {
@@ -131,12 +119,10 @@ const App = () => {
         setGames([]);
       }
     };
-
     const delay = setTimeout(fetchGames, 300);
     return () => clearTimeout(delay);
   }, [searchQuery]);
 
-  // Валидация при вводе
   const handleUsernameChange = (e) => {
     const value = e.target.value;
     setUsername(value);
@@ -144,11 +130,13 @@ const App = () => {
   };
 
   const handleEmailChange = (e) => {
-    const value = e.target.value;
+    let value = e.target.value.replace(/[^a-zA-Z0-9._@]/g, '');
     setEmail(value);
     if (emailError && value.trim()) {
-      const emailRegex = /^[^\s@]+@gmail\.com$/i;
-      if (emailRegex.test(value)) {
+      const allowedDomains = ['gmail.com', 'yandex.ru', 'mail.ru'];
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      const domain = value.split('@')[1];
+      if (emailRegex.test(value) && allowedDomains.includes(domain)) {
         setEmailError('');
       }
     }
@@ -164,15 +152,24 @@ const App = () => {
       setUsernameError('');
     }
 
-    const emailRegex = /^[^\s@]+@gmail\.com$/i;
     if (!email.trim()) {
       setEmailError('Email обязателен');
       hasError = true;
-    } else if (!emailRegex.test(email)) {
-      setEmailError('Email должен быть @gmail.com');
-      hasError = true;
     } else {
-      setEmailError('');
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!emailRegex.test(email)) {
+        setEmailError('Некорректный формат email');
+        hasError = true;
+      } else {
+        const domain = email.split('@')[1];
+        const allowedDomains = ['gmail.com', 'yandex.ru', 'mail.ru'];
+        if (!allowedDomains.includes(domain)) {
+          setEmailError('Разрешены только gmail.com, yandex.ru или mail.ru');
+          hasError = true;
+        } else {
+          setEmailError('');
+        }
+      }
     }
 
     if (hasError) return;
@@ -184,7 +181,6 @@ const App = () => {
         body: JSON.stringify({ username, email })
       });
       const data = await res.json();
-
       if (res.ok) {
         setUser(data);
         addNotification('Добро пожаловать!', 'success');
@@ -205,16 +201,18 @@ const App = () => {
       addNotification('Не удалось подключиться к серверу', 'error');
     }
   };
+
   const logout = () => {
     setUser(null);
     setActiveTab('all');
   };
+
   const handleOverlayClick = (e) => {
     if (e.target === e.currentTarget) {
       setIsMobileMenuOpen(false);
     }
   };
-  const isMobile = window.innerWidth < 1024;
+
   return (
     <div className="app">
       {/* Уведомления */}
@@ -228,8 +226,15 @@ const App = () => {
 
       {/* Шапка */}
       <header className="app-header">
-        <div className="logo-container">
-          <img src="/logo2.png" alt="Eternal Fang" className="logo" />
+        <div
+          className={`logo-container ${isMobile ? 'mobile-logo' : ''}`}
+          onClick={() => isMobile && setIsMobileMenuOpen(true)}
+        >
+          <img
+            src="/logo2.png"
+            alt="Eternal Fang"
+            className={`logo ${isMobileMenuOpen ? 'logo-open' : ''}`}
+          />
         </div>
         <div className="search-box">
           <input
@@ -239,22 +244,12 @@ const App = () => {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        {/* Кнопка меню для мобильных */}
-        {isMobile && (
-          <button 
-            className="menu-btn"
-            onClick={() => setIsMobileMenuOpen(true)}
-            aria-label="Открыть меню"
-          >
-            ☰
-          </button>
-        )}
       </header>
 
       <div className="app-container">
         {/* Боковое меню */}
-        <aside 
-          className={`sidebar ${isMobile ? (isMobileMenuOpen ? 'open' : '') : 'desktop'}`} 
+        <aside
+          className={`sidebar ${isMobile ? (isMobileMenuOpen ? 'open' : '') : 'desktop'}`}
           onClick={handleOverlayClick}
         >
           <div className="sidebar-content" onClick={(e) => e.stopPropagation()}>
@@ -268,7 +263,6 @@ const App = () => {
                   placeholder="Никнейм"
                 />
                 {usernameError && <p className="error-text">{usernameError}</p>}
-                
                 <input
                   type="email"
                   value={email}
@@ -276,9 +270,8 @@ const App = () => {
                   placeholder="@gmail.com"
                 />
                 {emailError && <p className="error-text">{emailError}</p>}
-                
-                <button 
-                  className="login-btn" 
+                <button
+                  className="login-btn"
                   onClick={handleLogin}
                   disabled={!username.trim() || !email.trim() || !!usernameError || !!emailError}
                 >
@@ -295,10 +288,31 @@ const App = () => {
                 </button>
               </div>
             )}
+
+            {isMobile && (
+              <div
+                className="sidebar-close-icon"
+                onClick={() => setIsMobileMenuOpen(false)}
+                aria-label="Закрыть меню"
+              >
+                <img
+                  src="/logo2.png"
+                  alt="Закрыть"
+                  className={`sidebar-logo-icon ${isMobileMenuOpen ? 'animate' : ''}`}
+                />
+              </div>
+            )}
+
+            {/* Соцсети — красивые кнопки */}
+            <div className="social-icons">
+              <a href="https://t.me/your_channel" target="_blank" rel="noopener noreferrer" className="social-icon-btn" aria-label="Telegram">T</a>
+              <a href="https://youtube.com/@your_channel" target="_blank" rel="noopener noreferrer" className="social-icon-btn" aria-label="YouTube">Y</a>
+              <a href="https://discord.gg/your_invite" target="_blank" rel="noopener noreferrer" className="social-icon-btn" aria-label="Discord">D</a>
+            </div>
           </div>
         </aside>
 
-        {/* Оверлей для мобильных */}
+        {/* Мобильный оверлей */}
         {isMobile && isMobileMenuOpen && (
           <div className="mobile-overlay" onClick={handleOverlayClick}></div>
         )}
@@ -307,28 +321,16 @@ const App = () => {
         <main className="main-content">
           {user && (
             <div className="tabs">
-              <button 
-                className={`tab-button ${activeTab === 'all' ? 'active' : ''}`}
-                onClick={() => setActiveTab('all')}
-              >
+              <button className={`tab-button ${activeTab === 'all' ? 'active' : ''}`} onClick={() => setActiveTab('all')}>
                 Все игры
               </button>
-              <button 
-                className={`tab-button ${activeTab === 'planning' ? 'active' : ''}`}
-                onClick={() => setActiveTab('planning')}
-              >
+              <button className={`tab-button ${activeTab === 'planning' ? 'active' : ''}`} onClick={() => setActiveTab('planning')}>
                 Хочу поиграть ({user.games?.filter(g => g.status === 'planning').length || 0})
               </button>
-              <button 
-                className={`tab-button ${activeTab === 'playing' ? 'active' : ''}`}
-                onClick={() => setActiveTab('playing')}
-              >
+              <button className={`tab-button ${activeTab === 'playing' ? 'active' : ''}`} onClick={() => setActiveTab('playing')}>
                 Играю ({user.games?.filter(g => g.status === 'playing').length || 0})
               </button>
-              <button 
-                className={`tab-button ${activeTab === 'completed' ? 'active' : ''}`}
-                onClick={() => setActiveTab('completed')}
-              >
+              <button className={`tab-button ${activeTab === 'completed' ? 'active' : ''}`} onClick={() => setActiveTab('completed')}>
                 Пройдено ({user.games?.filter(g => g.status === 'completed').length || 0})
               </button>
             </div>
@@ -338,39 +340,37 @@ const App = () => {
             {games.map(game => {
               const isAdded = user?.games?.some(g => g.gameId === game.id);
               const gameStatus = user?.games?.find(g => g.gameId === game.id)?.status;
-
-              if (user && activeTab !== 'all' && gameStatus !== activeTab) {
-                return null;
-              }
-
+              if (user && activeTab !== 'all' && gameStatus !== activeTab) return null;
               return (
-                <div key={game.id} className="game-card">
-                  <img 
-                    src={game.background_image} 
+                <div
+                  key={game.id}
+                  className="game-card"
+                  onMouseEnter={() => setHoveredGameId(game.id)}
+                  onMouseLeave={() => setHoveredGameId(null)}
+                >
+                  <img
+                    src={game.background_image}
                     alt={game.name}
                     onError={(e) => e.target.src = 'https://via.placeholder.com/300x150?text=No+Image'}
                   />
                   <div className="game-info">
                     <h3>{game.name}</h3>
                     <p className="release-date">{game.released}</p>
+                    <div className={`game-description ${hoveredGameId === game.id ? 'visible' : ''}`}>
+                      {game.description || 'Нет описания'}
+                    </div>
                     {isAdded ? (
                       <div className="game-actions">
                         {gameStatus === 'completed' ? (
-                          <button 
-                            className="remove-btn"
-                            onClick={() => removeGameFromProfile(game.id)}
-                          >
+                          <button className="remove-btn" onClick={() => removeGameFromProfile(game.id)}>
                             удалить
                           </button>
                         ) : (
                           <>
-                            <button 
-                              className="remove-btn"
-                              onClick={() => removeGameFromProfile(game.id)}
-                            >
+                            <button className="remove-btn" onClick={() => removeGameFromProfile(game.id)}>
                               удалить
                             </button>
-                            <button 
+                            <button
                               className="edit-btn"
                               onClick={() => updateGameStatus(game.id, gameStatus === 'playing' ? 'completed' : 'playing')}
                             >
@@ -380,8 +380,8 @@ const App = () => {
                         )}
                       </div>
                     ) : (
-                      <button 
-                        className="add-btn" 
+                      <button
+                        className="add-btn"
                         onClick={() => {
                           setSelectedGame(game);
                           setShowStatusModal(true);
@@ -405,29 +405,17 @@ const App = () => {
           <div className="modal-content">
             <h3>Куда добавить "{selectedGame.name}"?</h3>
             <div className="modal-buttons">
-              <button 
-                className="modal-btn planning"
-                onClick={() => addGameToProfile(selectedGame, 'planning')}
-              >
+              <button className="modal-btn planning" onClick={() => { addGameToProfile(selectedGame, 'planning'); setShowStatusModal(false); }}>
                 Хочу поиграть
               </button>
-              <button 
-                className="modal-btn playing"
-                onClick={() => addGameToProfile(selectedGame, 'playing')}
-              >
+              <button className="modal-btn playing" onClick={() => { addGameToProfile(selectedGame, 'playing'); setShowStatusModal(false); }}>
                 Играю
               </button>
-              <button 
-                className="modal-btn completed"
-                onClick={() => addGameToProfile(selectedGame, 'completed')}
-              >
+              <button className="modal-btn completed" onClick={() => { addGameToProfile(selectedGame, 'completed'); setShowStatusModal(false); }}>
                 Пройдено
               </button>
             </div>
-            <button 
-              className="modal-close"
-              onClick={() => setShowStatusModal(false)}
-            >
+            <button className="modal-close" onClick={() => setShowStatusModal(false)}>
               Отмена
             </button>
           </div>
