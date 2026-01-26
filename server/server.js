@@ -217,7 +217,7 @@ const mockGames = [
     name: "Stellaris", 
     released: "2016-05-09", 
     background_image: "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/281990/header.jpg?t=1764336805",
-    description: "Стратегия в реальном времени с элементами 4X, где игроки исследуют галактику, встречают инопланетные расы и строят империю."
+    description: "Стратегия в реальном времени с элементами 4X, где игроки исследуют галактику, встречают инопланетные расы и строят свою империю."
   }
 ];
 
